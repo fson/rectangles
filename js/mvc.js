@@ -67,6 +67,9 @@ R.mvc = (function () {
     set: function (key, value) {
       this._attributes[key] = value;
       this.trigger('change', key, value);
+    },
+    remove: function () {
+      this.trigger('remove', this);
     }
   });
   extend(Model.prototype, Events);
@@ -77,25 +80,37 @@ R.mvc = (function () {
       Base.apply(this, arguments);
       this.models = [];
       this.length = 0;
+      this.on('remove', this.remove);
       if (options && options.models) {
         this.push.apply(this, options.models);
       }
     },
     create: function (attributes) {
       var model = new this.model(attributes);
-      this.push(model);
+      this.add(model);
     },
-    push: function () {
-      var addedModels = Array.prototype.slice.call(arguments, 0);
+    add: function () {
+      var addedModels = Array.prototype.slice.call(arguments, 0),
+        that = this;
+      addedModels.forEach(function (model) {
+        model.on('*', function () {
+          that.trigger.apply(that, arguments);
+        }); 
+      });
       this.models.push.apply(this.models, addedModels);
       this.length = this.models.length;
       this.trigger('add', addedModels);
     },
-    truncate: function (length) {
-      var removedModels = this.models.splice(length, this.length - length);
+    remove: function (model) {
+      var i = this.models.indexOf(model);
+      this.models.splice(i, 1);
       this.length = this.models.length;
-      this.trigger('remove', removedModels);
-      return removed;
+    },
+    truncate: function (length) {
+      var removedModels = this.models.slice(length);
+      removedModels.forEach(function (model) {
+        model.remove();
+      });
     },
     forEach: function () {
       return this.models.forEach.apply(this.models, arguments);
@@ -126,6 +141,12 @@ R.mvc = (function () {
     replace: function (element) {
       this.el.innerHTML = '';
       this.el.appendChild(element);
+    },
+    remove: function () {
+      var parent;
+      if (this.el && this.el.parentNode) {
+        this.el.parentNode.removeChild(this.el);
+      }
     },
     append: function (element) {
       if (element.el) element = element.el;
