@@ -167,7 +167,7 @@ R.mvc = (function () {
       }, this);
     },
     backgroundColor: function (color) {
-      if (color === null) return this.el.style.backgroundColor;
+      if (color == null) return this.el.style.backgroundColor;
       this.el.style.backgroundColor = color;
     },
     width: function (w) {
