@@ -19,29 +19,76 @@ window.R.app = (function (R) {
     });
   });
 
-  RectangleListView = View.extend({
+  ButtonView = View.extend({
+    tagName: 'a',
+    className: 'button',
+    attributes: {
+      href: '#'
+    },
+    constructor: function (options) {
+      View.call(this, options);
+      this.text = options.text;
+      this.on('click', options.action);
+      this.el.textContent = this.text;
+    }
+  });
+
+  ControlsView = View.extend({
+    tagName: 'div',
+    className: 'controls',
+    constructor: function (options) {
+      View.call(this, options);
+      this.model = options.model;
+      this.append(new ButtonView({
+        text: 'Edit',
+        action: this.edit.bind(this)
+      }));
+      this.append(new ButtonView({
+        text: 'Delete',
+        action: this.remove.bind(this)
+      }));
+    },
+    edit: function () {
+      console.log('Edit', this.model);
+    },
+    remove: function () {
+      console.log('Delete', this.model);
+    }
+  });
+
+  RectangleView = View.extend({
+    tagName: 'div',
+    className: 'rectangle',
+    constructor: function (options) {
+      View.call(this, options);
+      this.model = options.model;
+      this.model.onChange(this.render, this);
+      this.render();
+    },
+    render: function () {
+      this.width(this.model.get('width'));
+      this.height(this.model.get('height'));
+      this.backgroundColor(this.model.get('color'));
+    }
+  });
+
+  RectangleItemView = View.extend({
+    tagName: 'li',
+    constructor: function (options) {
+      var model = options.model;
+      View.call(this, options);
+      this.append(new RectangleView({model: model}));
+      this.append(new ControlsView({model: model}));
+    }
+  });
+
+  ListView = View.extend({
     tagName: 'ul',
     render: function () {
-      var that, controls;
-      that = this;
+      var that = this;
       rectangles.forEach(function (r) {
-        var li, rect, h;
-        li = document.createElement('li');
-        rect = document.createElement('div')
-        rect.className = 'rectangle';
-        rect.style.width = r.get('width') + 'px';
-        h = r.get('height') + 'px';
-        li.style.height = h;
-        rect.style.height = h;
-        rect.style.backgroundColor = r.get('color');
-        controls = document.createElement('div');
-        controls.className = 'controls';
-        controls.innerHTML = ['Edit', 'Delete'].map(function (t) {
-          return '<a href="#">' + t + '</a>';
-        }).join('');
-        li.appendChild(rect);
-        li.appendChild(controls.cloneNode(true))
-        that.append(li);
+        var item = new RectangleItemView({model: r});
+        that.append(item);
       });
     }
   });
@@ -49,7 +96,7 @@ window.R.app = (function (R) {
   MainView = View.extend({
     constructor: function () {
       View.apply(this, arguments);
-      this.rectangleList = new RectangleListView({
+      this.rectangleList = new ListView({
         el: document.getElementById('rectangles')
       });
     },
