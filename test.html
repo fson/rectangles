@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Unit tests</title>
+    <style>
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+      }
+      h1 {
+        font-size: 1.5em;
+      }
+      .status, .status-info {
+        text-align: center;
+        width: 80%;
+        background-color: #EDEDED;
+        margin: 0 auto 0;    
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+      }
+      .status[data-status="run"] {
+        background-color: #EDFF94;
+      }
+      .status[data-status="error"] {
+        background-color: #FF94B8;
+      }
+      .status[data-status="ok"] {
+        background-color: #B8FF94;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <h1 id="status" class="status">Loading...</h2>
+    <p id="status-info" class="status-info"></p>
+
+    <script src="shim.js"></script><!-- IE 7-8 -->
+    <script>window.R = {}</script>
+    <script src="util.js"></script>
+    <script src="mvc.js"></script>
+    <script src="app.js"></script>
+    <script src="tests.js"></script>
+    <script src="test_runner.js"></script>
+    <script>
+        window.onload = R.testRunner;
+    </script>
+  </body>
+</html>
