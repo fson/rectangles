@@ -6,22 +6,42 @@ window.R.app = (function (R) {
   View = R.mvc.View;
   Model = R.mvc.Model;
 
-  rectangles = [];
-
   Rectangle = Model.extend();
+  rectangles = [
+    [100,100],
+    [200,300],
+    [100,200]
+  ].map(function (dim) {
+    return new Rectangle({
+      width: dim[0],
+      height: dim[1],
+      color: 'pink'
+    });
+  });
 
   RectangleListView = View.extend({
     tagName: 'ul',
     render: function () {
-      var that = this;
-      rectangles.map(function (r) {
-        var li = document.createElement('li');
-        li.className = 'rectangle';
-        li.style.width = r.get('width');
-        li.style.height = r.get('height');
-        return li;
-      }).forEach(function (li) {
-        that.appendChild(li);
+      var that, controls;
+      that = this;
+      rectangles.forEach(function (r) {
+        var li, rect, h;
+        li = document.createElement('li');
+        rect = document.createElement('div')
+        rect.className = 'rectangle';
+        rect.style.width = r.get('width') + 'px';
+        h = r.get('height') + 'px';
+        li.style.height = h;
+        rect.style.height = h;
+        rect.style.backgroundColor = r.get('color');
+        controls = document.createElement('div');
+        controls.className = 'controls';
+        controls.innerHTML = ['Edit', 'Delete'].map(function (t) {
+          return '<a href="#">' + t + '</a>';
+        }).join('');
+        li.appendChild(rect);
+        li.appendChild(controls.cloneNode(true))
+        that.append(li);
       });
     }
   });
@@ -29,8 +49,9 @@ window.R.app = (function (R) {
   MainView = View.extend({
     constructor: function () {
       View.apply(this, arguments);
-      this.rectanglesEl = document.getElementById('rectangles');
-      this.rectangleList = new RectangleListView({el: rectanglesEl});
+      this.rectangleList = new RectangleListView({
+        el: document.getElementById('rectangles')
+      });
     },
     render: function () {
       this.rectangleList.render();

@@ -13,6 +13,8 @@
     
     <h2>Rectangles</h2>
 
+    <ul id="rectangles" class="rectangles"></ul>
+
     <script src="js/shim.js"></script><!-- IE 7-8 -->
     <script>window.R = {}</script>
     <script src="js/util.js"></script>
@@ -20,7 +22,8 @@
     <script src="js/app.js"></script>
     <script>
       window.onload = function () {
-        var main = new R.app.MainView();
+        var main;
+        main = new R.app.MainView();
         main.render();
       };
     </script>

@@ -1,0 +1,14 @@
+.rectangles {
+  list-style-type: none;
+}
+.rectangles > li {
+  clear: both;
+}
+.rectangles .rectangle {
+  float: left;
+  margin: 0.5em;
+}
+.rectangles .controls a {
+  display: block;
+  padding: 0.5em;
+}
