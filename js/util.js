@@ -15,6 +15,16 @@ R.util = (function () {
     return target;
   };
 
+  util.defaults = function (target, source) {
+    var key;
+    for (key in source) {
+      if (source.hasOwnProperty(key) && !target.hasOwnProperty(key)) {
+        target[key] = source[key];
+      }
+    }
+    return target;
+  };
+
   ctor = function () {};
 
   util.inherit = function (base, properties) {
@@ -61,6 +71,12 @@ R.util = (function () {
           iterator.call(context, obj[key], key, obj);  
         }
       }
+    }
+  };
+
+  util.times = function (number, iterator, context) {
+    for (var i = 0; i < number; i++) {
+      iterator.call(context, i);
     }
   };
 
