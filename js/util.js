@@ -80,5 +80,10 @@ R.util = (function () {
     }
   };
 
+  util.choice = function (array) {
+    var i = Math.floor(Math.random() * array.length);
+    return array[i];
+  };
+
   return util;
 })();
