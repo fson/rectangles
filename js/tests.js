@@ -85,16 +85,17 @@ R.tests = (function () {
           area: function () { return this.get('w') * this.get('h'); }
         });
         b = new Box({w: 10, h: 10});
-        assertEquals(b.area(), 100, 'should calculate the are from attributes');
+        assertEquals(b.area(), 100, 'should calculate area from attributes');
 
         changedKey = null;
-        b.onChange(function (key) {
+        b.on('change', function (key) {
           changedKey = key;
         });
 
         b.set('w', 20);
         assertEquals(b.get('w'), 20, 'set should change the attribute');
         assertEquals(changedKey, 'w', 'set should trigger event handler');
+
       }
     }
   };
