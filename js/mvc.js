@@ -15,19 +15,24 @@ R.mvc = (function () {
       if (!this._callbacks) this._callbacks = {};
       if (!context) context = this;
       callbacks = this._callbacks;
-      events.split(' ').forEach(function (e) {
-        if (!callbacks[e]) callbacks[e] = [];
-        callbacks[e].push(handler.bind(context));
+      events.split(' ').forEach(function (eventName) {
+        if (!callbacks[eventName]) callbacks[eventName] = [];
+        callbacks[eventName].push(handler.bind(context));
       });
     },
     trigger: function (events) {
-      var callbacks = this._callbacks,
+      console.log.apply(console, arguments);
+      var callbacks = this._callbacks || {},
         args = Array.prototype.slice.call(arguments, 1);
-      events.split(' ').forEach(function (e) {
-        var list = callbacks[e];
-        if (list) {
-          list.forEach(function (handler) {
+      events.split(' ').forEach(function (eventName) {
+        if (callbacks[eventName]) {
+          callbacks[eventName].forEach(function (handler) {
             handler.apply(null, args);
+          });
+        }
+        if (callbacks['*']) {
+          callbacks['*'].forEach(function (handler) {
+            handler.apply(null, [eventName].concat(args));
           });
         }
       });
