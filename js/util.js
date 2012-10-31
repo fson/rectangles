@@ -1,9 +1,11 @@
 // Provides common utility functions
 // for extending objects and inheritance.
 R.util = (function () {
-  var ctor, extend;
+  var util = {},
+    extend,
+    ctor;
 
-  extend = function (target, source) {
+  util.extend = extend = function (target, source) {
     var key;
     for (key in source) {
       if (source.hasOwnProperty(key)) {
@@ -15,7 +17,7 @@ R.util = (function () {
 
   ctor = function () {};
 
-  inherit = function (base, properties) {
+  util.inherit = function (base, properties) {
     var child;
     properties = properties || {};
     if (properties.hasOwnProperty('constructor')) {
@@ -40,8 +42,27 @@ R.util = (function () {
     return child;
   };
 
-  return {
-    extend: extend,
-    inherit: inherit
+  util.functions = function (obj) {
+    var result = [];
+    for (key in obj) {
+      if (typeof obj[key] === 'function') {
+        result.push(key);
+      }
+    }
+    return result;
   };
+
+  util.each = function (obj, iterator, context) {
+    if (obj.forEach) {
+      obj.forEach(iterator, context);
+    } else {
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          iterator.call(context, obj[key], key, obj);  
+        }
+      }
+    }
+  };
+
+  return util;
 })();
