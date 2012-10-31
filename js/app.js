@@ -3,6 +3,8 @@ window.R.app = (function (R) {
     Collection = R.mvc.Collection,
     View = R.mvc.View,
     times = R.util.times,
+    colors = ['pink', 'chartreuse', 'chocolate'],
+    randomColor = R.util.choice.bind(null, colors),
     Rectangle,
     CountView,
     RectangleListView,
@@ -27,17 +29,21 @@ window.R.app = (function (R) {
     constructor: function (options) {
       View.call(this, options);
       this.collection = options.collection;
-      this.on('change', this.change);
+      this.collection.on('add remove', this.collectionChange, this) 
+      this.on('change keyup', this.inputChange);
     },
-    change: function () {
-      var value = parseInt(this.el.value),
-        difference = value - this.collection.length;
+    collectionChange: function () {
+      this.el.value = this.collection.length;
+    },
+    inputChange: function () {
+      var value = parseInt(this.el.value), difference;
       if (isNaN(value)) return;
+      difference = value - this.collection.length;
       if (difference >  0) {
         times(difference, function () {
-          this.collection.create()
+          this.collection.create({color: randomColor()});
         }, this);
-      } else {
+      } else if (difference < 0) {
         this.collection.truncate(value);
       }
     }
@@ -73,10 +79,9 @@ window.R.app = (function (R) {
       }));
     },
     edit: function () {
-      console.log('Edit', this.model);
     },
     remove: function () {
-      console.log('Delete', this.model);
+      this.model.remove();
     }
   });
 
@@ -101,6 +106,7 @@ window.R.app = (function (R) {
     constructor: function (options) {
       var model = options.model;
       View.call(this, options);
+      model.on('remove', this.remove, this);
       this.append(new RectangleView({model: model}));
       this.append(new ControlsView({model: model}));
     }
@@ -112,7 +118,6 @@ window.R.app = (function (R) {
       View.call(this, options);
       this.collection = options.collection;
       this.collection.on('add', this.add, this);
-      this.collection.on('remove', this.remove, this);
     },
     render: function () {
       this.add(this.collection.models);
@@ -121,9 +126,6 @@ window.R.app = (function (R) {
       this.append(models.map(function (r) {
         return new RectangleItemView({model: r});
       }));
-    },
-    remove: function (models) {
-      
     }
   });
 
