@@ -156,13 +156,15 @@ R.mvc = (function () {
         this.el.appendChild(element);
       }
     },
-    on: function (eventName, handler) {
+    on: function (events, handler) {
       handler = handler.bind(this);
-      if (this.el.addEventListener) {
-        this.el.addEventListener('click', handler, false); 
-      } else if (el.attachEvent)  {
-        this.el.attachEvent('on' + eventName, handler);
-      }
+      events.split(' ').forEach(function (type) {
+        if (this.el.addEventListener) {
+          this.el.addEventListener(type, handler, false); 
+        } else if (el.attachEvent)  {
+          this.el.attachEvent('on' + type, handler);
+        }
+      }, this);
     },
     backgroundColor: function (color) {
       if (color === null) return this.el.style.backgroundColor;
