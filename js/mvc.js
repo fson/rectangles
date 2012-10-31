@@ -1,9 +1,10 @@
 // A simple basis for building an app
 // using MV* architecture.
 R.mvc = (function () {
-  var Base, Model, View;
+  var mvc, Base;
+  mvc = {};
 
-  Base = function () {};
+  mvc.Base = Base = function () {};
   Base.prototype = {
     // Sugar that returns the super prototype.
     // Usage in a method: this.super().myMethod('foo')
@@ -17,7 +18,7 @@ R.mvc = (function () {
     return child;
   };
 
-  Model = Base.extend({
+  mvc.Model = Base.extend({
     constructor: function (attributes) {
       Base.call(this);
       this._attributes = attributes || {};
@@ -41,7 +42,7 @@ R.mvc = (function () {
     }
   });
 
-  View = Base.extend({
+  mvc.View = Base.extend({
     constructor: function (options) {
       Base.apply(this, arguments);
       if (options && options.el) {
@@ -49,20 +50,44 @@ R.mvc = (function () {
       } else {
         this.el = document.createElement(this.tagName);
       }
+      if (this.className) {
+        this.el.className += this.className;
+      }
+      if (this.attributes) {
+        R.util.each(this.attributes, function (value, key) {
+          this.el.setAttribute(key, value);
+        }, this);
+      }
     },
     replace: function (element) {
       this.el.innerHTML = '';
       this.el.appendChild(element);
     },
     append: function (element) {
+      if (element.el) element = element.el;
       this.el.appendChild(element);
     },
-    tagName: 'div'
+    on: function (eventName, handler) {
+      if (this.el.addEventListener) {
+        this.el.addEventListener('click', handler, false); 
+      } else if (el.attachEvent)  {
+        this.el.attachEvent('on' + eventName, handler);
+      }
+    },
+    backgroundColor: function (color) {
+      if (color === null) return this.el.style.backgroundColor;
+      this.el.style.backgroundColor = color;
+    },
+    width: function (w) {
+      if (w == null) return this.el.style.width;
+      this.el.style.width = w + 'px';
+    },
+    height: function (h) {
+      if (h == null) return this.el.style.height;
+      this.el.style.height = h + 'px';
+    },
+    tagName: 'div',
   });
 
-  return {
-    Base: Base,
-    Model: Model,
-    View: View
-  };
+  return mvc;
 })();
