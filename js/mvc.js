@@ -1,8 +1,38 @@
 // A simple basis for building an app
 // using MV* architecture.
 R.mvc = (function () {
-  var mvc, Base;
-  mvc = {};
+  var mvc = {},
+    extend = R.util.extend,
+    defaults = R.util.defaults,
+    Events,
+    Base,
+    Model,
+    Collection;
+
+  Events = {
+    on: function (events, handler, context) {
+      var callbacks;
+      if (!this._callbacks) this._callbacks = {};
+      if (!context) context = this;
+      callbacks = this._callbacks;
+      events.split(' ').forEach(function (e) {
+        if (!callbacks[e]) callbacks[e] = [];
+        callbacks[e].push(handler.bind(context));
+      });
+    },
+    trigger: function (events) {
+      var callbacks = this._callbacks,
+        args = Array.prototype.slice.call(arguments, 1);
+      events.split(' ').forEach(function (e) {
+        var list = callbacks[e];
+        if (list) {
+          list.forEach(function (handler) {
+            handler.apply(null, args);
+          });
+        }
+      });
+    }
+  }
 
   mvc.Base = Base = function () {};
   Base.prototype = {
@@ -18,29 +48,58 @@ R.mvc = (function () {
     return child;
   };
 
-  mvc.Model = Base.extend({
+  mvc.Model = Model = Base.extend({
     constructor: function (attributes) {
       Base.call(this);
       this._attributes = attributes || {};
-      this._callbacks = [];
+      if (this.defaults) {
+        defaults(this._attributes, this.defaults);
+      }
     },
     get: function (key) {
       return this._attributes[key];
     },
     set: function (key, value) {
       this._attributes[key] = value;
-      this.triggerChange(key, value);
-    },
-    triggerChange: function (key, value) {
-      this._callbacks.forEach(function (handler) {
-        handler(key, value);
-      });
-    },
-    onChange: function (handler, context) {
-      context = context || this;
-      this._callbacks.push(handler.bind(context));
+      this.trigger('change', key, value);
     }
   });
+  extend(Model.prototype, Events);
+
+  mvc.Collection = Collection = Base.extend({
+    model: Model,
+    constructor: function (options) {
+      Base.apply(this, arguments);
+      this.models = [];
+      this.length = 0;
+      if (options && options.models) {
+        this.push.apply(this, options.models);
+      }
+    },
+    create: function (attributes) {
+      var model = new this.model(attributes);
+      this.push(model);
+    },
+    push: function () {
+      var addedModels = Array.prototype.slice.call(arguments, 0);
+      this.models.push.apply(this.models, addedModels);
+      this.length = this.models.length;
+      this.trigger('add', addedModels);
+    },
+    truncate: function (length) {
+      var removedModels = this.models.splice(length, this.length - length);
+      this.length = this.models.length;
+      this.trigger('remove', removedModels);
+      return removed;
+    },
+    forEach: function () {
+      return this.models.forEach.apply(this.models, arguments);
+    },
+    map: function () {
+      return this.models.map.apply(this.models, arguments);
+    }
+  });
+  extend(Collection.prototype, Events);
 
   mvc.View = Base.extend({
     constructor: function (options) {
@@ -65,9 +124,14 @@ R.mvc = (function () {
     },
     append: function (element) {
       if (element.el) element = element.el;
-      this.el.appendChild(element);
+      if (Array.isArray(element)) {
+        element.forEach(this.append, this);
+      } else {
+        this.el.appendChild(element);
+      }
     },
     on: function (eventName, handler) {
+      handler = handler.bind(this);
       if (this.el.addEventListener) {
         this.el.addEventListener('click', handler, false); 
       } else if (el.attachEvent)  {
