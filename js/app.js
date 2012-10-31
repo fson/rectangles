@@ -1,22 +1,46 @@
 window.R.app = (function (R) {
-  var View, Model, Rectangle,
-    RectangleListView, MainView,
-    rectangles, rectanglesEl, list;
+  var Model = R.mvc.Model,
+    Collection = R.mvc.Collection,
+    View = R.mvc.View,
+    times = R.util.times,
+    Rectangle,
+    CountView,
+    RectangleListView,
+    MainView,
+    rectangles,
+    rectanglesEl,
+    list;
 
-  View = R.mvc.View;
-  Model = R.mvc.Model;
-
-  Rectangle = Model.extend();
-  rectangles = [
-    [100,100],
-    [200,300],
-    [100,200]
-  ].map(function (dim) {
-    return new Rectangle({
-      width: dim[0],
-      height: dim[1],
+  Rectangle = Model.extend({
+    defaults: {
+      width: 200,
+      height: 100,
       color: 'pink'
-    });
+    }
+  });
+
+  Rectangles = Collection.extend({
+    model: Rectangle
+  });
+
+  CountView = View.extend({
+    constructor: function (options) {
+      View.call(this, options);
+      this.collection = options.collection;
+      this.on('change', this.change);
+    },
+    change: function () {
+      var value = parseInt(this.el.value),
+        difference = value - this.collection.length;
+      if (isNaN(value)) return;
+      if (difference >  0) {
+        times(difference, function () {
+          this.collection.create()
+        }, this);
+      } else {
+        this.collection.truncate(value);
+      }
+    }
   });
 
   ButtonView = View.extend({
@@ -62,7 +86,7 @@ window.R.app = (function (R) {
     constructor: function (options) {
       View.call(this, options);
       this.model = options.model;
-      this.model.onChange(this.render, this);
+      this.model.on('change', this.render, this);
       this.render();
     },
     render: function () {
@@ -84,20 +108,36 @@ window.R.app = (function (R) {
 
   ListView = View.extend({
     tagName: 'ul',
+    constructor: function (options) {
+      View.call(this, options);
+      this.collection = options.collection;
+      this.collection.on('add', this.add, this);
+      this.collection.on('remove', this.remove, this);
+    },
     render: function () {
-      var that = this;
-      rectangles.forEach(function (r) {
-        var item = new RectangleItemView({model: r});
-        that.append(item);
-      });
+      this.add(this.collection.models);
+    },
+    add: function (models) {
+      this.append(models.map(function (r) {
+        return new RectangleItemView({model: r});
+      }));
+    },
+    remove: function (models) {
+      
     }
   });
 
   MainView = View.extend({
     constructor: function () {
       View.apply(this, arguments);
+      this.rectangles = new Rectangles();
+      this.countView = new CountView({
+        el: document.getElementById('rectangle-count'),
+        collection: this.rectangles
+      });
       this.rectangleList = new ListView({
-        el: document.getElementById('rectangles')
+        el: document.getElementById('rectangles'),
+        collection: this.rectangles
       });
     },
     render: function () {
