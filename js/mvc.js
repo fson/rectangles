@@ -21,7 +21,6 @@ R.mvc = (function () {
       });
     },
     trigger: function (events) {
-      console.log.apply(console, arguments);
       var callbacks = this._callbacks || {},
         args = Array.prototype.slice.call(arguments, 1);
       events.split(' ').forEach(function (eventName) {
