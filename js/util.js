@@ -81,9 +81,13 @@ this.R.util = (function () {
     }
   };
 
-  util.choice = function (array) {
-    var i = Math.floor(Math.random() * array.length);
-    return array[i];
+  util.cycle = function (array) {
+    var i = -1;
+    return function () {
+      i += 1;
+      if (i === array.length) i = 0;
+      return array[i];
+    };
   };
 
   return util;
