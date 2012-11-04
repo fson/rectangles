@@ -89,7 +89,7 @@ this.R.tests = (function (R) {
         assertEquals(b.area(), 100, 'should calculate area from attributes');
 
         changedKey = null;
-        b.on('change', function (key) {
+        b.subscribe('change', function (key) {
           changedKey = key;
         });
 
