@@ -3,11 +3,14 @@ window.R.app = (function (R) {
     Collection = R.mvc.Collection,
     View = R.mvc.View,
     times = R.util.times,
+    each = R.util.each,
     colors = ['pink', 'chartreuse', 'chocolate'],
     randomColor = R.util.choice.bind(null, colors),
     Rectangle,
     CountView,
+    FormField,
     RectangleListView,
+    EditRectangleView,
     MainView,
     rectangles,
     rectanglesEl,
@@ -57,9 +60,24 @@ window.R.app = (function (R) {
     },
     constructor: function (options) {
       View.call(this, options);
-      this.text = options.text;
+      this.label = options.label;
       this.on('click', options.action);
-      this.el.textContent = this.text;
+      this.el.textContent = this.label;
+    }
+  });
+
+  FormField = View.extend({
+    tagName: 'label',
+    constructor: function (options) {
+      var input;
+      View.call(this, options);
+      this.el.textContent = options.label;
+      input = document.createElement('input');
+      input.value = options.value;
+      this.append(input);
+    },
+    value: function () {
+      return this.el.getElementsByTagName('input')[0].value;
     }
   });
 
@@ -70,18 +88,74 @@ window.R.app = (function (R) {
       View.call(this, options);
       this.model = options.model;
       this.append(new ButtonView({
-        text: 'Edit',
+        label: 'Edit',
         action: this.edit.bind(this)
       }));
       this.append(new ButtonView({
-        text: 'Delete',
+        label: 'Delete',
         action: this.remove.bind(this)
       }));
     },
     edit: function () {
+      this.publish('edit');
     },
     remove: function () {
       this.model.remove();
+    }
+  });
+
+  EditRectangleView = View.extend({
+    tagName: 'form',
+    className: 'edit',
+    fields: {
+      width: 'Width',
+      height: 'Height',
+      color: 'Colour'
+    },
+    constructor: function (options) {
+      View.call(this, options);
+      this.model = options.model;
+      this.form = {};
+      this.on('submit', this.save);
+      this.render();
+    },
+    renderFields: function () {
+      var key, label, view;
+      each(this.fields, function (label, key) {
+        label = this.fields[key];
+        view = new FormField({
+          label: this.fields[key],
+          value: this.model.get(key)
+        });
+        this.form[key] = view;
+        this.append(view);
+      }, this);
+    },
+    render: function () {
+      var submit, cancel, or, cancel;
+
+      submit = document.createElement('input');
+      submit.type = 'submit';
+      submit.value = 'Save';
+      or = document.createTextNode('or');
+      cancel = new ButtonView({
+        label: 'Cancel',
+        action: this.cancel.bind(this)
+      });
+
+      this.renderFields();
+      this.append([submit, or, cancel])
+    },
+    save: function () {
+      each(this.form, function (field, key) {
+        this.model.set(key, field.value());
+      }, this);
+      this.remove();
+      return false;
+    },
+    cancel: function () {
+      this.remove();
+      return false;
     }
   });
 
