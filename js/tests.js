@@ -1,4 +1,4 @@
-R.tests = (function () {
+this.R.tests = (function (R) {
   var fail, assert, assertEquals;
 
   fail =  function (wrong, correct, message) {
@@ -99,4 +99,4 @@ R.tests = (function () {
       }
     }
   };
-})();
+})(this.R);

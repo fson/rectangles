@@ -46,7 +46,7 @@ if (!Array.prototype.indexOf) {
       }
     }
     return -1;
-  }
+  };
 }
 
 // Function#bind

@@ -1,4 +1,5 @@
-window.R.app = (function (R) {
+this.R.app = (function (window, document, R) {
+  'use strict';
   var Model = R.mvc.Model,
     Collection = R.mvc.Collection,
     View = R.mvc.View,
@@ -7,14 +8,16 @@ window.R.app = (function (R) {
     colors = ['pink', 'chartreuse', 'chocolate'],
     randomColor = R.util.choice.bind(null, colors),
     Rectangle,
+    Rectangles,
+    ButtonView,
     CountView,
     FormField,
-    RectangleListView,
+    ControlsView,
+    RectangleView,
+    RectangleItemView,
+    ListView,
     EditRectangleView,
-    MainView,
-    rectangles,
-    rectanglesEl,
-    list;
+    MainView;
 
   Rectangle = Model.extend({
     defaults: {
@@ -32,14 +35,14 @@ window.R.app = (function (R) {
     constructor: function (options) {
       View.call(this, options);
       this.collection = options.collection;
-      this.collection.subscribe('add remove', this.collectionChange, this) 
+      this.collection.subscribe('add remove', this.collectionChange, this);
       this.on('change keyup', this.inputChange);
     },
     collectionChange: function () {
       this.el.value = this.collection.length;
     },
     inputChange: function () {
-      var value = parseInt(this.el.value), difference;
+      var value = parseInt(this.el.value, 10), difference;
       if (isNaN(value)) return;
       difference = value - this.collection.length;
       if (difference >  0) {
@@ -120,10 +123,8 @@ window.R.app = (function (R) {
       this.render();
     },
     renderFields: function () {
-      var key, label, view;
       each(this.fields, function (label, key) {
-        label = this.fields[key];
-        view = new FormField({
+        var view = new FormField({
           label: this.fields[key],
           value: this.model.get(key)
         });
@@ -132,7 +133,7 @@ window.R.app = (function (R) {
       }, this);
     },
     render: function () {
-      var submit, cancel, or, cancel;
+      var submit, cancel, or;
 
       submit = document.createElement('input');
       submit.type = 'submit';
@@ -144,7 +145,7 @@ window.R.app = (function (R) {
       });
 
       this.renderFields();
-      this.append([submit, or, cancel])
+      this.append([submit, or, cancel]);
     },
     save: function () {
       each(this.form, function (field, key) {
@@ -230,4 +231,4 @@ window.R.app = (function (R) {
   return {
     MainView: MainView
   };
-})(window.R);
+})(this, this.document, this.R);

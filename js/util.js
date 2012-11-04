@@ -1,6 +1,6 @@
 // Provides common utility functions
 // for extending objects and inheritance.
-R.util = (function () {
+this.R.util = (function () {
   var util = {},
     extend,
     ctor;
@@ -53,7 +53,7 @@ R.util = (function () {
   };
 
   util.functions = function (obj) {
-    var result = [];
+    var key, result = [];
     for (key in obj) {
       if (typeof obj[key] === 'function') {
         result.push(key);

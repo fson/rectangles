@@ -1,6 +1,6 @@
 // A simple basis for building an app
 // using MV* architecture.
-R.mvc = (function () {
+this.R.mvc = (function (document, R) {
   var mvc = {},
     extend = R.util.extend,
     defaults = R.util.defaults,
@@ -36,7 +36,7 @@ R.mvc = (function () {
         }
       });
     }
-  }
+  };
 
   mvc.Base = Base = function () {};
   Base.prototype = {
@@ -141,7 +141,6 @@ R.mvc = (function () {
       this.el.appendChild(element);
     },
     remove: function () {
-      var parent;
       if (this.el && this.el.parentNode) {
         this.el.parentNode.removeChild(this.el);
       }
@@ -159,25 +158,25 @@ R.mvc = (function () {
       events.split(' ').forEach(function (type) {
         if (this.el.addEventListener) {
           this.el.addEventListener(type, handler, false); 
-        } else if (el.attachEvent)  {
+        } else if (this.el.attachEvent)  {
           this.el.attachEvent('on' + type, handler);
         }
       }, this);
     },
     backgroundColor: function (color) {
-      if (color == null) return this.el.style.backgroundColor;
+      if (typeof color === 'undefined') return this.el.style.backgroundColor;
       this.el.style.backgroundColor = color;
     },
     width: function (w) {
-      if (w == null) return this.el.style.width;
+      if (typeof w === 'undefined') return this.el.style.width;
       this.el.style.width = w + 'px';
     },
     height: function (h) {
-      if (h == null) return this.el.style.height;
+      if (typeof h === 'undefined') return this.el.style.height;
       this.el.style.height = h + 'px';
     },
-    tagName: 'div',
+    tagName: 'div'
   });
 
   return mvc;
-})();
+})(this.document, this.R);

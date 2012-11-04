@@ -1,8 +1,8 @@
-R.testRunner = (function () {
-  var log, status, statusTexts, $, setStatus, runTests;
+this.R.testRunner = (function (window, document, R) {
+  var log, statusTexts, $, setStatus, runTests;
 
-  log = (typeof console !== 'undefined') ?
-    console.log.bind(console) : function () {};
+  log = (typeof window.console !== 'undefined') ?
+    window.console.log.bind(window.console) : function () {};
 
   $ = function (id) {
     return document.getElementById(id);
@@ -49,4 +49,4 @@ R.testRunner = (function () {
       throw err;
     }
   };
-})();
+})(this, this.document, this.R);
