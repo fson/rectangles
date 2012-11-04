@@ -1,14 +1,63 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
 .rectangles {
   list-style-type: none;
 }
-.rectangles > li {
+.rectangle-item {
   clear: both;
 }
-.rectangles .rectangle {
-  float: left;
-  margin: 0.5em;
-}
-.rectangles .controls a {
+.rectangle-item > .controls a {
   display: block;
-  padding: 0.5em;
+  padding: 10px;
+}
+.rectangle-item .rectangle {
+  float: left;
+  margin: 10px;
+}
+.edit-rectangle {
+  position: relative;
+  clear: both;
+  margin: 10px;
+}
+.edit-rectangle fieldset {
+  border: none;
+  padding: 0;
+}
+.edit-rectangle label {
+  display: block;
+  width: 200px;
+  margin-bottom: 10px;
+  clear: both;
+}
+.edit-rectangle label input {
+  float: right;
+}
+.edit-rectangle .controls {
+  display: inline-block;
+  position: absolute;
+  left: 220px;
+  bottom: 0;
+}
+button,
+input[type="submit"] {
+  display: inline-block;
+  padding: 6px 20px;
+  margin: 0 6px;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #acacac;
+  box-shadow: inset 2px 0 0 rgba(0,0,0,.1),
+              0 2px 0 rgba(0,0,0,.2);
+  border-radius: 4px;
+  background: rgb(252, 252, 252);
+  background: linear-gradient(to right,
+              rgba(262,262,262,1) 0%,
+              rgba(232,232,232,1) 100%);
+}
+button:active,
+input[type="submit"]:active {
+  box-shadow: inset 0 4px 4px rgba(0,0,0,.1);
+  border-radius: 4px;
+  background: rgb(232,232,232);
 }
