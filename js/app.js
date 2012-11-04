@@ -29,7 +29,7 @@ window.R.app = (function (R) {
     constructor: function (options) {
       View.call(this, options);
       this.collection = options.collection;
-      this.collection.on('add remove', this.collectionChange, this) 
+      this.collection.subscribe('add remove', this.collectionChange, this) 
       this.on('change keyup', this.inputChange);
     },
     collectionChange: function () {
@@ -91,7 +91,7 @@ window.R.app = (function (R) {
     constructor: function (options) {
       View.call(this, options);
       this.model = options.model;
-      this.model.on('change', this.render, this);
+      this.model.subscribe('change', this.render, this);
       this.render();
     },
     render: function () {
@@ -104,11 +104,17 @@ window.R.app = (function (R) {
   RectangleItemView = View.extend({
     tagName: 'li',
     constructor: function (options) {
-      var model = options.model;
+      var controls;
       View.call(this, options);
-      model.on('remove', this.remove, this);
-      this.append(new RectangleView({model: model}));
-      this.append(new ControlsView({model: model}));
+      this.model = options.model;
+      this.model.subscribe('remove', this.remove, this);
+      this.append(new RectangleView({model: this.model}));
+      controls = new ControlsView({model: this.model});
+      controls.subscribe('edit', this.edit.bind(this));
+      this.append(controls);
+    },
+    edit: function () {
+      this.append(new EditRectangleView({model: this.model}));
     }
   });
 
@@ -117,7 +123,7 @@ window.R.app = (function (R) {
     constructor: function (options) {
       View.call(this, options);
       this.collection = options.collection;
-      this.collection.on('add', this.add, this);
+      this.collection.subscribe('add', this.add, this);
     },
     render: function () {
       this.add(this.collection.models);

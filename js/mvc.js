@@ -4,13 +4,13 @@ R.mvc = (function () {
   var mvc = {},
     extend = R.util.extend,
     defaults = R.util.defaults,
-    Events,
+    PubSub,
     Base,
     Model,
     Collection;
 
-  Events = {
-    on: function (events, handler, context) {
+  PubSub = {
+    subscribe: function (events, handler, context) {
       var callbacks;
       if (!this._callbacks) this._callbacks = {};
       if (!context) context = this;
@@ -20,7 +20,7 @@ R.mvc = (function () {
         callbacks[eventName].push(handler.bind(context));
       });
     },
-    trigger: function (events) {
+    publish: function (events) {
       var callbacks = this._callbacks || {},
         args = Array.prototype.slice.call(arguments, 1);
       events.split(' ').forEach(function (eventName) {
@@ -46,6 +46,7 @@ R.mvc = (function () {
       return this.constructor.__super__;
     }
   };
+  extend(Base.prototype, PubSub);
   Base.extend = function (properties) {
     var child = R.util.inherit(this, properties);
     child.extend = this.extend;
@@ -65,13 +66,12 @@ R.mvc = (function () {
     },
     set: function (key, value) {
       this._attributes[key] = value;
-      this.trigger('change', key, value);
+      this.publish('change', key, value);
     },
     remove: function () {
-      this.trigger('remove', this);
+      this.publish('remove', this);
     }
   });
-  extend(Model.prototype, Events);
 
   mvc.Collection = Collection = Base.extend({
     model: Model,
@@ -79,7 +79,7 @@ R.mvc = (function () {
       Base.apply(this, arguments);
       this.models = [];
       this.length = 0;
-      this.on('remove', this.remove);
+      this.subscribe('remove', this.remove);
       if (options && options.models) {
         this.push.apply(this, options.models);
       }
@@ -92,13 +92,13 @@ R.mvc = (function () {
       var addedModels = Array.prototype.slice.call(arguments, 0),
         that = this;
       addedModels.forEach(function (model) {
-        model.on('*', function () {
-          that.trigger.apply(that, arguments);
+        model.subscribe('*', function () {
+          that.publish.apply(that, arguments);
         }); 
       });
       this.models.push.apply(this.models, addedModels);
       this.length = this.models.length;
-      this.trigger('add', addedModels);
+      this.publish('add', addedModels);
     },
     remove: function (model) {
       var i = this.models.indexOf(model);
@@ -118,7 +118,6 @@ R.mvc = (function () {
       return this.models.map.apply(this.models, arguments);
     }
   });
-  extend(Collection.prototype, Events);
 
   mvc.View = Base.extend({
     constructor: function (options) {
