@@ -7,6 +7,8 @@ this.R.mvc = (function (document, R) {
     defaults = R.util.defaults,
     PubSub,
     Base,
+    prepareElement,
+    View,
     Model,
     Collection;
 
@@ -120,7 +122,23 @@ this.R.mvc = (function (document, R) {
     }
   });
 
-  mvc.View = Base.extend({
+  prepareElement = function (element) {
+    var result;
+    if (element instanceof View) element = element.el;
+    if (Array.isArray(element)) {
+      result = document.createDocumentFragment();
+      for (var i = 0; i < element.length; i++) {
+        result.appendChild(prepareElement(element[i]));
+      }
+    } else if (typeof element === 'string' || element instanceof String) {
+      result = document.createTextNode(element);
+    } else {
+      result = element;
+    }
+    return result;
+  };
+
+  mvc.View = View = Base.extend({
     constructor: function (options) {
       Base.apply(this, arguments);
       if (options && options.el) {
@@ -147,15 +165,19 @@ this.R.mvc = (function (document, R) {
       }
     },
     append: function (element) {
-      if (element.el) element = element.el;
-      if (Array.isArray(element)) {
-        element.forEach(this.append, this);
-      } else {
-        this.el.appendChild(element);
-      }
+      this.el.appendChild(prepareElement(element));
     },
-    on: function (events, handler) {
-      handler = handler.bind(this);
+    on: function (events, callback, context) {
+      var handler;
+      context = context || this;
+      handler = function (e) {
+        callback.apply(context, arguments);
+        if (e.preventDefault) {
+          e.preventDefault();
+        } else {
+          e.returnValue = false;
+        }
+      };
       events.split(' ').forEach(function (type) {
         if (this.el.addEventListener) {
           this.el.addEventListener(type, handler, false); 
@@ -175,6 +197,10 @@ this.R.mvc = (function (document, R) {
     height: function (h) {
       if (typeof h === 'undefined') return this.el.style.height;
       this.el.style.height = h + 'px';
+    },
+    value: function (value) {
+      if (typeof value === 'undefined') return this.el.value;
+      this.el.value = value;
     },
     tagName: 'div'
   });
