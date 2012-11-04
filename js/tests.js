@@ -1,4 +1,5 @@
 this.R.tests = (function (R) {
+  'use strict';
   var fail, assert, assertEquals;
 
   fail =  function (wrong, correct, message) {

@@ -1,6 +1,7 @@
 // A simple basis for building an app
 // using MV* architecture.
 this.R.mvc = (function (document, R) {
+  'use strict';
   var mvc = {},
     extend = R.util.extend,
     defaults = R.util.defaults,

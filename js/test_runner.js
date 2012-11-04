@@ -1,4 +1,5 @@
 this.R.testRunner = (function (window, document, R) {
+  'use strict';
   var log, statusTexts, $, setStatus, runTests;
 
   log = (typeof window.console !== 'undefined') ?

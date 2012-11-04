@@ -1,9 +1,10 @@
 // Provides common utility functions
 // for extending objects and inheritance.
 this.R.util = (function () {
+  'use strict';
   var util = {},
     extend,
-    ctor;
+    Ctor;
 
   util.extend = extend = function (target, source) {
     var key;
@@ -25,7 +26,7 @@ this.R.util = (function () {
     return target;
   };
 
-  ctor = function () {};
+  Ctor = function () {};
 
   util.inherit = function (base, properties) {
     var child;
@@ -40,8 +41,8 @@ this.R.util = (function () {
 
     extend(child, base);
 
-    ctor.prototype = base.prototype;
-    child.prototype = new ctor();
+    Ctor.prototype = base.prototype;
+    child.prototype = new Ctor();
 
     if (properties) {
       extend(child.prototype, properties);
