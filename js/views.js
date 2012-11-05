@@ -16,18 +16,19 @@ this.R.views = (function (View) {
     constructor: function (options) {
       View.call(this, options);
       if (options.label) {
-        this.el.textContent = options.label;
+        this.text(options.label);
       }
       this.on('click', options.action);
     },
-    disable: function (argument) {
+    disable: function () {
       var text;
       this.originalEl = this.el;
+      text = this.text();
       this.setElement(document.createElement('span'));
-      this.append(this.originalEl.textContent);
+      this.append(text);
       this.disabled = true;
     },
-    enable: function (argument) {
+    enable: function () {
       if (this.disabled) {
         this.setElement(this.originalEl);
         this.disabled = false;
