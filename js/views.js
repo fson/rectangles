@@ -51,7 +51,7 @@ this.R.views = (function (View) {
     tagName: 'label',
     constructor: function (options) {
       View.call(this, options);
-      this.el.textContent = options.label;
+      this.text(options.label);
       this.input = new InputField(options);
       this.append(this.input);
     },
