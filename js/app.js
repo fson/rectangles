@@ -174,18 +174,18 @@ this.R.app = (function (window, document, R) {
       View.apply(this, arguments);
       this.rectangles = new Rectangles();
       this.countView = new CountView({
-        el: document.getElementById('rectangle-count'),
-        errorEl: document.getElementById('rectangle-count-error'),
+        el: 'rectangle-count',
+        errorView: new Container({el: 'rectangle-count-error'}),
         collection: this.rectangles
       });
       this.rectangleList = new ListView({
-        el: document.getElementById('rectangles'),
+        el: 'rectangles',
         collection: this.rectangles,
         item: RectangleItemView
       });
       this.rectangleList.render();
       this.addButton = new ButtonView({
-        el: document.getElementById('add-rectangle'),
+        el: 'add-rectangle',
         action: this.add.bind(this)
       });
       this.countView.setCount(3);
