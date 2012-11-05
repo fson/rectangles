@@ -240,6 +240,11 @@ this.R.mvc = (function (document, R) {
       Base.apply(this, arguments);
       if (options && options.el) {
         this.el = options.el;
+        if (typeof options.el === 'string' || options.el instanceof String) {
+          this.el = document.getElementById(options.el);
+        } else {
+          this.el = options.el;
+        }
       } else {
         this.el = document.createElement(this.tagName);
       }
