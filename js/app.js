@@ -46,6 +46,7 @@ this.R.app = (function (window, document, R) {
       this.on('change keyup', this.inputChange);
     },
     collectionChange: function () {
+      this.clearError();
       this.el.value = this.collection.length;
     },
     inputChange: function () {
