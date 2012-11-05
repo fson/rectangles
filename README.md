@@ -15,6 +15,6 @@ Files:
 * `js/views.js` - generic views
   used as UI building blocks (`R.views`)
 * `js/util.js` - utility functions (`R.util`)
-* `js/shim.js` - shims needed for IE support
 * `js/tests.js` - tests for most of `R.mvc` and `R.util`
 * `js/test_runner.js` - function for running the tests, used in test.html
+* `js/shim.js` - shims (optional) only needed for IE support
