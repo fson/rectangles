@@ -5,14 +5,22 @@
  */
 this.R.testRunner = (function (window, document, R) {
   'use strict';
-  var log, statusTexts, $, setStatus, runTests;
+  var log, statusTexts, get, statusView,
+    statusInfoView, setStatus, runTests;
 
   log = (typeof window.console !== 'undefined') ?
     window.console.log.bind(window.console) : function () {};
 
-  $ = function (id) {
+  get = function (id) {
     return document.getElementById(id);
   };
+
+  statusView = new R.views.Container({
+    el: get('status')
+  });
+  statusInfoView = new R.views.Container({
+    el: get('status-info')
+  });
 
   statusTexts = {
     'run': 'Running tests...',
@@ -21,11 +29,9 @@ this.R.testRunner = (function (window, document, R) {
   };
 
   setStatus = function (name, info) {
-    var el;
-    el = $('status');
-    el.setAttribute('data-status', name);
-    el.textContent = statusTexts[name];
-    $('status-info').textContent = info || '';
+    statusView.el.setAttribute('data-status', name);
+    statusView.text(statusTexts[name]);
+    statusInfoView.text(info || '');
   };
 
   runTests = function (tests) {
