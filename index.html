@@ -8,23 +8,28 @@
   <body>
     <label>
       Number of Rectangles
-      <input type="number" id="rectangle-count">
+      <input type="number" id="rectangle-count" min="0" max="100">
+      <span class="error" id="rectangle-count-error"></span>
     </label>
     
     <h2>Rectangles</h2>
 
     <ul id="rectangles" class="rectangles"></ul>
 
+    <button id="add-rectangle">
+      Add Rectangle
+    </button>
+
     <script src="js/shim.js"></script><!-- IE 7-8 -->
     <script>window.R = {}</script>
     <script src="js/util.js"></script>
     <script src="js/mvc.js"></script>
+    <script src="js/views.js"></script>
     <script src="js/app.js"></script>
     <script>
       window.onload = function () {
         var main;
         main = new R.app.MainView();
-        main.render();
       };
     </script>
   </body>

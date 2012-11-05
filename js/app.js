@@ -29,12 +29,18 @@ this.R.app = (function (window, document, R) {
   });
 
   Rectangles = Collection.extend({
-    model: Rectangle
+    model: Rectangle,
+    create: function (attributes) {
+      if (!attributes) attributes = {};
+      if (!attributes.color) attributes.color = randomColor();
+      Collection.prototype.create.call(this, attributes);
+    }
   });
 
   CountView = View.extend({
     constructor: function (options) {
       View.call(this, options);
+      if (options.errorEl) this.errorEl = options.errorEl;
       this.collection = options.collection;
       this.collection.subscribe('add remove', this.collectionChange, this);
       this.on('change keyup', this.inputChange);
@@ -44,15 +50,18 @@ this.R.app = (function (window, document, R) {
     },
     inputChange: function () {
       var value = parseInt(this.el.value, 10);
-      if (!isNaN(value)) {
+      if (!isNaN(value) && value >= 0 && value <= 100) {
+        this.clearError();
         this.setCount(value);
+      } else {
+        this.setError('Enter a number (0-100)');
       }
     },
     setCount: function (value) {
       var difference = value - this.collection.length;
       if (difference >  0) {
         times(difference, function () {
-          this.collection.create({color: randomColor()});
+          this.collection.create();
         }, this);
       } else if (difference < 0) {
         this.collection.truncate(value);
@@ -154,16 +163,23 @@ this.R.app = (function (window, document, R) {
       this.rectangles = new Rectangles();
       this.countView = new CountView({
         el: document.getElementById('rectangle-count'),
+        errorEl: document.getElementById('rectangle-count-error'),
         collection: this.rectangles
       });
       this.rectangleList = new ListView({
         el: document.getElementById('rectangles'),
-        collection: this.rectangles
+        collection: this.rectangles,
+        item: RectangleItemView
       });
-    },
-    render: function () {
       this.rectangleList.render();
+      this.addButton = new ButtonView({
+        el: document.getElementById('add-rectangle'),
+        action: this.add.bind(this)
+      });
       this.countView.setCount(3);
+    },
+    add: function () {
+      this.rectangles.create();
     }
   });
 

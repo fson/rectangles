@@ -3,6 +3,14 @@ body {
 }
 .rectangles {
   list-style-type: none;
+  overflow: hidden;
+  padding: 0;
+  margin-left: 20px;
+}
+.rectangles + button {
+  display: block;
+  clear: both;
+  margin-left: 30px;
 }
 .rectangle-item {
   clear: both;
