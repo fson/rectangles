@@ -5,11 +5,8 @@
  */
 this.R.testRunner = (function (window, document, R) {
   'use strict';
-  var log, statusTexts, get, statusView,
+  var statusTexts, get, statusView,
     statusInfoView, setStatus, runTests;
-
-  log = (typeof window.console !== 'undefined') ?
-    window.console.log.bind(window.console) : function () {};
 
   get = function (id) {
     return document.getElementById(id);
@@ -40,11 +37,11 @@ this.R.testRunner = (function (window, document, R) {
       if (tests.hasOwnProperty(key)) {
         test = tests[key];
         if (typeof test === 'function') {
-          log('Running test: ' + key);
+          console.log('Running test: ' + key);
           test();
-          log('OK');
+          console.log('OK');
         } else {
-          log('*** Test suite: ' + key + ' ***');
+          console.log('*** Test suite: ' + key + ' ***');
           runTests(test);
         }
       }
@@ -53,6 +50,11 @@ this.R.testRunner = (function (window, document, R) {
 
   /** @name R.testRunner */
   return function (suite) {
+    if (typeof console === 'undefined') {
+      window.console = {
+        log: function () {}
+      };
+    }
     setStatus('run');
     try {
       runTests(suite);
