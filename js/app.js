@@ -40,22 +40,22 @@ this.R.app = (function (window, document, R) {
   CountView = View.extend({
     constructor: function (options) {
       View.call(this, options);
-      if (options.errorEl) this.errorEl = options.errorEl;
+      this.errorView = options.errorView;
       this.collection = options.collection;
       this.collection.subscribe('add remove', this.collectionChange, this);
       this.on('change keyup', this.inputChange);
     },
     collectionChange: function () {
-      this.clearError();
+      this.errorView.text('');
       this.el.value = this.collection.length;
     },
     inputChange: function () {
       var value = parseInt(this.el.value, 10);
       if (!isNaN(value) && value >= 0 && value <= 100) {
-        this.clearError();
+        this.errorView.text('');
         this.setCount(value);
       } else {
-        this.setError('Enter a number (0-100)');
+        this.errorView.text('Enter a number (0-100)');
       }
     },
     setCount: function (value) {
@@ -67,12 +67,6 @@ this.R.app = (function (window, document, R) {
       } else if (difference < 0) {
         this.collection.truncate(value);
       }
-    },
-    setError: function (message) {
-      if (this.errorEl) this.errorEl.textContent = message;
-    },
-    clearError: function () {
-      if (this.errorEl) this.errorEl.textContent = '';
     }
   });
 
