@@ -9,14 +9,14 @@ this.R.app = (function (window, document, R) {
     randomColor = R.util.cycle(colors),
     Rectangle,
     Rectangles,
-    ButtonView,
+    ButtonView = R.views.ButtonView,
+    InputField = R.views.InputField,
+    FormField = R.views.FormField,
+    ListView = R.views.ListView,
+    Container = R.views.Container,
     CountView,
-    InputField,
-    FormField,
-    Container,
     RectangleView,
     RectangleItemView,
-    ListView,
     EditRectangleView,
     MainView;
 
@@ -57,55 +57,12 @@ this.R.app = (function (window, document, R) {
       } else if (difference < 0) {
         this.collection.truncate(value);
       }
-    }
-  });
-
-  ButtonView = View.extend({
-    tagName: 'a',
-    className: 'button',
-    attributes: {
-      href: '#'
     },
-    constructor: function (options) {
-      View.call(this, options);
-      this.label = options.label;
-      this.on('click', options.action);
-      this.el.textContent = this.label;
-    }
-  });
-
-  InputField = View.extend({
-    tagName: 'input',
-    constructor: function (options) {
-      this.attributes = {
-        type: options.type || 'text',
-        value: options.value
-      };
-      View.call(this, options);
-    }
-  });
-
-  FormField = View.extend({
-    tagName: 'label',
-    constructor: function (options) {
-      View.call(this, options);
-      this.el.textContent = options.label;
-      this.input = new InputField(options);
-      this.append(this.input);
+    setError: function (message) {
+      if (this.errorEl) this.errorEl.textContent = message;
     },
-    value: function () {
-      return this.input.value();
-    }
-  });
-
-  Container = View.extend({
-    tagName: 'div',
-    constructor: function (options) {
-      var children = Array.prototype.slice.call(arguments, 1);
-      if (options.className) this.className = options.className;
-      if (options.tagName) this.tagName = options.tagName;
-      View.call(this, options);
-      this.append(children);
+    clearError: function () {
+      if (this.errorEl) this.errorEl.textContent = '';
     }
   });
 
@@ -188,23 +145,6 @@ this.R.app = (function (window, document, R) {
     },
     edit: function () {
       this.append(new EditRectangleView({model: this.model}));
-    }
-  });
-
-  ListView = View.extend({
-    tagName: 'ul',
-    constructor: function (options) {
-      View.call(this, options);
-      this.collection = options.collection;
-      this.collection.subscribe('add', this.add, this);
-    },
-    render: function () {
-      this.add(this.collection.models);
-    },
-    add: function (models) {
-      this.append(models.map(function (r) {
-        return new RectangleItemView({model: r});
-      }));
     }
   });
 
