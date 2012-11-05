@@ -113,9 +113,11 @@ this.R.app = (function (window, document, R) {
       each(this.form, function (field, key) {
         this.model.set(key, field.value());
       }, this);
+      this.publish('save');
       this.remove();
     },
     cancel: function () {
+      this.publish('cancel');
       this.remove();
     }
   });
@@ -144,16 +146,25 @@ this.R.app = (function (window, document, R) {
       View.call(this, options);
       model.subscribe('remove', this.remove, this);
       this.model = model;
+      this.editButton = new ButtonView({
+        label: 'Edit',
+        action: this.edit.bind(this)
+      });
       this.append([
         new RectangleView({model: this.model}),
         new Container({className: 'controls'},
-          new ButtonView({label: 'Edit', action: this.edit.bind(this)}),
+          this.editButton,
           new ButtonView({label: 'Delete', action: model.remove.bind(model)})
         )
       ]);
     },
     edit: function () {
-      this.append(new EditRectangleView({model: this.model}));
+      this.editButton.disable();
+      var editView = new EditRectangleView({model: this.model});
+      editView.subscribe('save cancel', function () {
+        this.editButton.enable();
+      }, this);
+      this.append(editView);
     }
   });
 

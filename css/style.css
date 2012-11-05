@@ -15,7 +15,8 @@ body {
 .rectangle-item {
   clear: both;
 }
-.rectangle-item > .controls a {
+.rectangle-item > .controls a,
+.rectangle-item > .controls span {
   display: block;
   padding: 10px;
 }
@@ -40,6 +41,7 @@ body {
 }
 .edit-rectangle label input {
   float: right;
+  width: 100px;
 }
 .edit-rectangle .controls {
   display: inline-block;

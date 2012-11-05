@@ -325,6 +325,17 @@ this.R.mvc = (function (document, R) {
       this.el.style.height = h + 'px';
     },
     /**
+     * Replaces the element of the view with a new one.
+     * @memberOf R.mvc.View#
+     * @param {Node} newEl new element
+     */ 
+    setElement: function (newEl) {
+      if (this.el.parentNode) {
+        this.el.parentNode.replaceChild(newEl, this.el);
+        this.el = newEl;
+      }
+    },
+    /**
      * Gets or sets the height of the element.
      * Without arguments, returns the value of the element.
      * With value given as an argument, sets the value.
