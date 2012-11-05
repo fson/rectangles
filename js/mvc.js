@@ -336,7 +336,7 @@ this.R.mvc = (function (document, R) {
       }
     },
     /**
-     * Gets or sets the height of the element.
+     * Gets or sets the value of the element.
      * Without arguments, returns the value of the element.
      * With value given as an argument, sets the value.
      * Useful for views that have an HTMLInputElement as their element.
@@ -346,6 +346,20 @@ this.R.mvc = (function (document, R) {
     value: function (value) {
       if (typeof value === 'undefined') return this.el.value;
       this.el.value = value;
+    },
+    /**
+     * Sets the text content of the element.
+     * @memberOf R.mvc.View#
+     * @param {string} text
+     */
+    text: function (text) {
+      if ('textContent' in this.el) {
+        if (typeof text === 'undefined') return this.el.textContent;
+        this.el.textContent = text;
+      } else if ('innerText' in this.el) {
+        if (typeof text === 'undefined') return this.el.innerText;
+        this.el.innerText = text;
+      }
     },
     tagName: 'div'
   });
