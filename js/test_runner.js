@@ -1,3 +1,8 @@
+/**
+ * A function for running test suites.
+ *
+ * @function
+ */
 this.R.testRunner = (function (window, document, R) {
   'use strict';
   var log, statusTexts, $, setStatus, runTests;
@@ -40,10 +45,11 @@ this.R.testRunner = (function (window, document, R) {
     }
   };
 
-  return function () {
+  /** @name R.testRunner */
+  return function (suite) {
     setStatus('run');
     try {
-      runTests(R.tests);
+      runTests(suite);
       setStatus('ok');
     } catch (err) {
       setStatus('error', err.name + ': ' + err.message);
